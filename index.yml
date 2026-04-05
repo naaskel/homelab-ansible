@@ -1,1 +1,1 @@
-- import_playbook: playbooks/docker.yml
+- import_playbook: playbooks/system/index.yml

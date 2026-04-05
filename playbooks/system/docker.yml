@@ -1,4 +1,4 @@
-- name: Setup Pi
+- name: Setup Docker
   hosts: homelab
   become: true
   roles:
