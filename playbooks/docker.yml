@@ -1,0 +1,8 @@
+- name: Setup Pi
+  hosts: homelab
+  become: true
+  roles:
+    - role: geerlingguy.docker
+      vars:
+        docker_users:
+          - pi
