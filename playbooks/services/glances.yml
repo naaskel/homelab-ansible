@@ -1,0 +1,35 @@
+- name: Setup Glances
+  hosts: homelab
+  become: true
+
+  vars:
+    glances_dir: "/home/{{ ansible_user }}/ssd/glances"
+
+  tasks:
+    - name: Create Glances directory
+      file:
+        path: "{{ glances_dir }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/glances/compose.yml.j2
+        dest: "{{ glances_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart Glances
+
+    - name: Start Glances
+      community.docker.docker_compose_v2:
+        project_src: "{{ glances_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart Glances
+      community.docker.docker_compose_v2:
+        project_src: "{{ glances_dir }}"
+        state: restarted
