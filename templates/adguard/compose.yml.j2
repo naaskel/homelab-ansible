@@ -1,0 +1,9 @@
+services:
+  adguard:
+    image: adguard/adguardhome
+    container_name: adguard
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /home/{{ ansible_user }}/ssd/adguard/work:/opt/adguardhome/work
+      - /home/{{ ansible_user }}/ssd/adguard/conf:/opt/adguardhome/conf

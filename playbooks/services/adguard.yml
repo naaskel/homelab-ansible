@@ -1,0 +1,38 @@
+- name: Setup AdGuard Home
+  hosts: homelab
+  become: true
+
+  vars:
+    adguard_dir: "/home/{{ ansible_user }}/ssd/adguard"
+
+  tasks:
+    - name: Create AdGuard directories
+      file:
+        path: "{{ adguard_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - work
+        - conf
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/adguard/compose.yml.j2
+        dest: "{{ adguard_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart AdGuard
+
+    - name: Start AdGuard
+      community.docker.docker_compose_v2:
+        project_src: "{{ adguard_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart AdGuard
+      community.docker.docker_compose_v2:
+        project_src: "{{ adguard_dir }}"
+        state: restarted
