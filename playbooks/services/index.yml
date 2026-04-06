@@ -1,2 +1,3 @@
 - import_playbook: adguard.yml
 - import_playbook: glances.yml
+- import_playbook: nginx-proxy-manager.yml

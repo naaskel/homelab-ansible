@@ -3,7 +3,16 @@ services:
     image: adguard/adguardhome
     container_name: adguard
     restart: unless-stopped
-    network_mode: host
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3001:3001/tcp"
     volumes:
       - /home/{{ ansible_user }}/ssd/adguard/work:/opt/adguardhome/work
       - /home/{{ ansible_user }}/ssd/adguard/conf:/opt/adguardhome/conf
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true

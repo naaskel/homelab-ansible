@@ -1,0 +1,38 @@
+- name: Setup Nginx Proxy Manager
+  hosts: homelab
+  become: true
+
+  vars:
+    npm_dir: "/home/{{ ansible_user }}/ssd/nginx-proxy-manager"
+
+  tasks:
+    - name: Create Nginx Proxy Manager directories
+      file:
+        path: "{{ npm_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - data
+        - letsencrypt
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/nginx-proxy-manager/compose.yml.j2
+        dest: "{{ npm_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart Nginx Proxy Manager
+
+    - name: Start Nginx Proxy Manager
+      community.docker.docker_compose_v2:
+        project_src: "{{ npm_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart Nginx Proxy Manager
+      community.docker.docker_compose_v2:
+        project_src: "{{ npm_dir }}"
+        state: restarted

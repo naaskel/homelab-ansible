@@ -6,3 +6,9 @@
       vars:
         docker_users:
           - "{{ ansible_user }}"
+
+  post_tasks:
+    - name: Create homelab Docker network
+      community.docker.docker_network:
+        name: homelab
+        state: present

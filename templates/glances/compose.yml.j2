@@ -4,10 +4,17 @@ services:
     container_name: glances
     restart: unless-stopped
     pid: host
-    network_mode: host
     privileged: true
+    ports:
+      - "61208:61208/tcp"
     environment:
       - GLANCES_OPT=-w
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/{{ ansible_user }}/ssd/glances:/glances/conf
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true
