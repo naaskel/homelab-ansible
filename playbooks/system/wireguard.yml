@@ -1,0 +1,34 @@
+- name: Setup WireGuard
+  hosts: homelab
+  become: true
+
+  tasks:
+    - name: Install WireGuard
+      apt:
+        name: wireguard
+        state: present
+        update_cache: true
+
+    - name: Copy WireGuard files
+      copy:
+        src: "../../files/wireguard/{{ item.src }}"
+        dest: "/etc/wireguard/{{ item.src }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { src: wg0.conf,           mode: '0600' }
+        - { src: wg0-firewall.sh,    mode: '0700' }
+      notify: Restart WireGuard
+
+    - name: Enable and start WireGuard
+      service:
+        name: wg-quick@wg0
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart WireGuard
+      service:
+        name: wg-quick@wg0
+        state: restarted
