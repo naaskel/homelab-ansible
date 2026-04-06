@@ -1,1 +1,2 @@
+- import_playbook: playbooks/hardware/index.yml
 - import_playbook: playbooks/system/index.yml

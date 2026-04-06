@@ -1,0 +1,24 @@
+- name: Mount external SSD
+  hosts: homelab
+  become: true
+
+  vars:
+    ssd_uuid: "9aee358f-cb2a-4329-93e4-9d54d5ad63a0"
+    ssd_mount_point: "/home/{{ ansible_user }}/ssd"
+
+  tasks:
+    - name: Create mount point
+      file:
+        path: "{{ ssd_mount_point }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Mount SSD via fstab
+      mount:
+        path: "{{ ssd_mount_point }}"
+        src: "UUID={{ ssd_uuid }}"
+        fstype: ext4
+        opts: defaults,nofail,x-systemd.device-timeout=5
+        state: mounted

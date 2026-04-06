@@ -5,4 +5,4 @@
     - role: geerlingguy.docker
       vars:
         docker_users:
-          - pi
+          - "{{ ansible_user }}"
