@@ -1,0 +1,15 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080/tcp"
+    volumes:
+      - /home/{{ ansible_user }}/ssd/open-webui/data:/app/backend/data
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true
