@@ -1,0 +1,50 @@
+- name: Setup Seafile
+  hosts: homelab
+  become: true
+
+  vars:
+    seafile_dir: "/home/{{ ansible_user }}/ssd/seafile"
+
+  tasks:
+    - name: Create Seafile directories
+      file:
+        path: "{{ seafile_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - data/seafile-data
+        - data/seafile-mysql/db
+
+    - name: Copy .env file
+      copy:
+        src: ../../files/seafile/.env
+        dest: "{{ seafile_dir }}/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0600"
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/seafile/seafile-server.yml.j2
+        dest: "{{ seafile_dir }}/seafile-server.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart Seafile
+
+    - name: Start Seafile
+      community.docker.docker_compose_v2:
+        project_src: "{{ seafile_dir }}"
+        files:
+          - seafile-server.yml
+        state: present
+
+  handlers:
+    - name: Restart Seafile
+      community.docker.docker_compose_v2:
+        project_src: "{{ seafile_dir }}"
+        files:
+          - seafile-server.yml
+        state: restarted
