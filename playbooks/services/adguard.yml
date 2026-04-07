@@ -1,6 +1,7 @@
 - name: Setup AdGuard Home
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     adguard_dir: "/home/{{ ansible_user }}/ssd/adguard"

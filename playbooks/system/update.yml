@@ -1,6 +1,7 @@
 - name: Update system packages
   hosts: homelab
   become: true
+  tags: system
 
   tasks:
     - name: Update apt cache and upgrade packages

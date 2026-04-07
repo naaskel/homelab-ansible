@@ -1,6 +1,7 @@
 - name: Mount external SSD
   hosts: homelab
   become: true
+  tags: hardware
 
   vars:
     ssd_uuid: "9aee358f-cb2a-4329-93e4-9d54d5ad63a0"

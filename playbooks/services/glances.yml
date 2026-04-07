@@ -1,6 +1,7 @@
 - name: Setup Glances
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     glances_dir: "/home/{{ ansible_user }}/ssd/glances"

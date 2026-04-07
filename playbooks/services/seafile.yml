@@ -1,6 +1,7 @@
 - name: Setup Seafile
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     seafile_dir: "/home/{{ ansible_user }}/ssd/seafile"

@@ -1,6 +1,7 @@
 - name: Setup Nginx Proxy Manager
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     npm_dir: "/home/{{ ansible_user }}/ssd/nginx-proxy-manager"

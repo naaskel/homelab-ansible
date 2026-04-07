@@ -1,6 +1,7 @@
 - name: Setup Open WebUI
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     open_webui_dir: "/home/{{ ansible_user }}/ssd/open-webui"

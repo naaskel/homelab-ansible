@@ -1,6 +1,7 @@
 - name: Setup WireGuard
   hosts: homelab
   become: true
+  tags: packages
 
   tasks:
     - name: Install WireGuard

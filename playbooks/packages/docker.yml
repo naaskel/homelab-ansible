@@ -1,6 +1,7 @@
 - name: Setup Docker
   hosts: homelab
   become: true
+  tags: packages
   roles:
     - role: geerlingguy.docker
       vars:

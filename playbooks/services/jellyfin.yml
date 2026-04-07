@@ -1,6 +1,7 @@
 - name: Setup Jellyfin
   hosts: homelab
   become: true
+  tags: services
 
   vars:
     jellyfin_dir: "/home/{{ ansible_user }}/ssd/jellyfin"

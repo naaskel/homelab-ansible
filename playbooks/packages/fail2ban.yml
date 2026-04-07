@@ -1,6 +1,7 @@
 - name: Setup fail2ban
   hosts: homelab
   become: true
+  tags: packages
 
   tasks:
     - name: Install fail2ban
