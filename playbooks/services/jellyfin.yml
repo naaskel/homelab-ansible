@@ -1,0 +1,39 @@
+- name: Setup Jellyfin
+  hosts: homelab
+  become: true
+
+  vars:
+    jellyfin_dir: "/home/{{ ansible_user }}/ssd/jellyfin"
+
+  tasks:
+    - name: Create Jellyfin directories
+      file:
+        path: "{{ jellyfin_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - config
+        - cache
+        - media
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/jellyfin/compose.yml.j2
+        dest: "{{ jellyfin_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart Jellyfin
+
+    - name: Start Jellyfin
+      community.docker.docker_compose_v2:
+        project_src: "{{ jellyfin_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart Jellyfin
+      community.docker.docker_compose_v2:
+        project_src: "{{ jellyfin_dir }}"
+        state: restarted

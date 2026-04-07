@@ -1,0 +1,17 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096/tcp"
+    volumes:
+      - /home/{{ ansible_user }}/ssd/jellyfin/config:/config
+      - /home/{{ ansible_user }}/ssd/jellyfin/cache:/cache
+      - /home/{{ ansible_user }}/ssd/jellyfin/media:/media:ro
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true
