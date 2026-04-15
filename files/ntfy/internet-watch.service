@@ -1,0 +1,13 @@
+[Unit]
+Description=Ping 8.8.8.8 and notify ntfy on outages
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/internet-watch.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

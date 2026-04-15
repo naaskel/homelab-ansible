@@ -1,0 +1,20 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    command:
+      - serve
+    restart: unless-stopped
+    ports:
+      - "8090:80/tcp"
+    environment:
+      - TZ=Etc/UTC
+    volumes:
+      - /home/{{ ansible_user }}/ssd/ntfy/cache:/var/cache/ntfy
+      - /home/{{ ansible_user }}/ssd/ntfy/etc:/etc/ntfy
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true

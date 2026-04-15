@@ -38,6 +38,7 @@ I've split my playbooks into "sections", here they are in order:
 - Glances
 - Jellyfin
 - Nginx Proxy Manager
+- ntfy
 - Open WebUI
 - Seafile
 

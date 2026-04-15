@@ -1,0 +1,39 @@
+- name: Setup ntfy
+  hosts: homelab
+  become: true
+  tags: services
+
+  vars:
+    ntfy_dir: "/home/{{ ansible_user }}/ssd/ntfy"
+
+  tasks:
+    - name: Create ntfy directories
+      file:
+        path: "{{ ntfy_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - cache
+        - etc
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/ntfy/compose.yml.j2
+        dest: "{{ ntfy_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart ntfy
+
+    - name: Start ntfy
+      community.docker.docker_compose_v2:
+        project_src: "{{ ntfy_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart ntfy
+      community.docker.docker_compose_v2:
+        project_src: "{{ ntfy_dir }}"
+        state: restarted

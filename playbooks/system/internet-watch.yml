@@ -1,0 +1,41 @@
+- name: Setup internet watchdog
+  hosts: homelab
+  become: true
+  tags: system
+
+  tasks:
+    - name: Copy internet-watch script
+      copy:
+        src: ../../files/ntfy/internet-watch.sh
+        dest: /usr/local/bin/internet-watch.sh
+        owner: root
+        group: root
+        mode: "0755"
+      notify: Restart internet-watch
+
+    - name: Install systemd unit
+      copy:
+        src: ../../files/ntfy/internet-watch.service
+        dest: /etc/systemd/system/internet-watch.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart internet-watch
+
+    - name: Enable and start internet-watch
+      systemd:
+        name: internet-watch.service
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
+
+    - name: Restart internet-watch
+      systemd:
+        name: internet-watch.service
+        state: restarted
