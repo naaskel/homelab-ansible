@@ -9,6 +9,8 @@ services:
       - "8090:80/tcp"
     environment:
       - TZ=Etc/UTC
+      - NTFY_BASE_URL=http://ntfy.home
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
     volumes:
       - /home/{{ ansible_user }}/ssd/ntfy/cache:/var/cache/ntfy
       - /home/{{ ansible_user }}/ssd/ntfy/etc:/etc/ntfy
