@@ -1,0 +1,59 @@
+- name: Setup Paperless-ngx
+  hosts: homelab
+  become: true
+  tags: services
+
+  vars:
+    paperless_dir: "/home/{{ ansible_user }}/ssd/paperless"
+
+  tasks:
+    - name: Create Paperless directories
+      file:
+        path: "{{ paperless_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      loop:
+        - data
+        - media
+        - export
+        - consume
+        - pgdata
+
+    - name: Create Redis data directory
+      file:
+        path: "{{ paperless_dir }}/redisdata"
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: "0755"
+
+    - name: Copy .env file
+      copy:
+        src: ../../files/paperless/.env
+        dest: "{{ paperless_dir }}/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0600"
+      notify: Restart Paperless
+
+    - name: Copy compose file
+      template:
+        src: ../../templates/paperless/compose.yml.j2
+        dest: "{{ paperless_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+      notify: Restart Paperless
+
+    - name: Start Paperless
+      community.docker.docker_compose_v2:
+        project_src: "{{ paperless_dir }}"
+        state: present
+
+  handlers:
+    - name: Restart Paperless
+      community.docker.docker_compose_v2:
+        project_src: "{{ paperless_dir }}"
+        state: restarted

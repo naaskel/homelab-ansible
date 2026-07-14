@@ -1,0 +1,67 @@
+services:
+  broker:
+    image: redis:8
+    container_name: paperless-redis
+    restart: unless-stopped
+    volumes:
+      - /home/{{ ansible_user }}/ssd/paperless/redisdata:/data
+    networks:
+      - paperless-net
+
+  db:
+    image: postgres:18
+    container_name: paperless-db
+    restart: unless-stopped
+    volumes:
+      - /home/{{ ansible_user }}/ssd/paperless/pgdata:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${PAPERLESS_DBPASS:?Variable is not set or empty}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperless"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - paperless-net
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    ports:
+      - "8004:8000/tcp"
+    volumes:
+      - /home/{{ ansible_user }}/ssd/paperless/data:/usr/src/paperless/data
+      - /home/{{ ansible_user }}/ssd/paperless/media:/usr/src/paperless/media
+      - /home/{{ ansible_user }}/ssd/paperless/export:/usr/src/paperless/export
+      - /home/{{ ansible_user }}/ssd/paperless/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${PAPERLESS_DBPASS:?Variable is not set or empty}
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:?Variable is not set or empty}
+      PAPERLESS_URL: ${PAPERLESS_URL:-}
+      PAPERLESS_TIME_ZONE: Europe/Warsaw
+      PAPERLESS_OCR_LANGUAGE: eng+pol
+      PAPERLESS_OCR_LANGUAGES: pol
+      PAPERLESS_OCR_SKIP_ARCHIVE_FILE: with_text
+      USERMAP_UID: 1000
+      USERMAP_GID: 1000
+    depends_on:
+      db:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    networks:
+      - paperless-net
+      - homelab
+
+networks:
+  paperless-net:
+  homelab:
+    external: true
