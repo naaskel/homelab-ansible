@@ -37,10 +37,7 @@ I've split my playbooks into "sections", here they are in order:
 - AdGuard Home
 - Glances
 - Jellyfin
-- Nginx Proxy Manager
-- ntfy
-- Open WebUI
-- Seafile
+- And many more!
 
 *(From what I saw, all the images support ARM, so there isn't any performance issues, with all of these running I'm sitting at around 10% CPU and 30% RAM utilization.)*
 
